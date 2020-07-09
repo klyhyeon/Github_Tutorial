@@ -1,0 +1,173 @@
+package lotto;
+
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Random;
+
+//6개 난수 중 중복x (o)
+//보너스 생성 메서드 생성 (o)
+//prize 계산 메서드 생성  (o)
+//mainclass 출력 
+
+
+public class LottoSimulator {
+	
+	//static 지정해주는 이유???
+	//지정안하면 다른 class에서 못쓴다고 뜸
+	
+	static Random r = new Random();
+	static int prize1 = 0;
+	static int prize2 = 0;
+	static int prize3 = 0;
+	static int prize4 = 0;
+	static int prize5 = 0;
+	static int prize0 = 0;
+
+	//return 받는 메서드 생성할 때 void 자리에 return 받을 변수 데이터 타입 입력해야된다!
+	//det. void는 return이 없을 때 사용함.
+	//ex. public static int[] ... return bonus(데이터 타입 = int)
+	
+	public static int[] createLotto() {
+				
+		//while문을 써야되는 이유?? i++를 조건이 충족될 때에만 시행되도록 설정하기 까다롭다.
+		
+		int[] lotto = new int [6];
+		int i = 0;
+		
+		while(i < 6) {
+		
+		boolean flag = true;
+		int num = r.nextInt(45)+1; 
+
+		for(int j = 0; j <= i; j++) {
+			if(num == lotto[j]) {
+				flag = false;
+				break;
+			}
+			
+		}
+			
+			if(flag == true) {
+			lotto[i] = num;
+			i++;
+			}
+		
+		}
+		return lotto;
+	}//6개 난수 생성 완료.
+	
+	public static int createBonus(int[] win) {
+		
+		int bonus = 0;
+		
+		int n = 0;
+		while(n < 1) {
+			
+			boolean flag = true;
+			int rn = r.nextInt(45)+1;
+			
+			//win에 있는 모든 수랑 비교해줘야 하니, 향상 for문이 더 낫다.
+			
+			for(int i = 0; i < 6; i++) {
+				if(rn == win[i]) {
+					flag = false;
+					break;
+				}
+			}
+			
+			if(flag == true) {
+				bonus = rn;
+				n++;
+			}
+		}
+		
+		return bonus;
+		
+	}
+	
+	public static void createPrize(int[] win, int[] myLotto, int bonus) {
+		
+		int count = 0;
+		
+		for (int o : myLotto) {
+			
+			for(int p : win) {
+				
+				//몰라서 풀이 참고, break 누락하지마라.
+				
+				if(o == p) {
+					count++;
+					break;
+				}
+			}		
+		}
+		
+		if(count == 6) prize1++;
+		else if(count == 5) {
+			
+			//boolean의 중요성!!
+			
+			boolean flag = false;
+			for(int q : myLotto) {
+				if(bonus == q) {
+					flag = true;
+					prize2++;
+					break;
+				} 
+				} 
+				if(flag == false) {
+					prize3++;				
+			}
+		} else if(count == 4) prize4++;
+		else if(count == 3) prize5++;
+		else prize0++;
+
+		
+	}
+	
+	
+	
+	public static void main(String[] args) {
+		
+		DecimalFormat df = new DecimalFormat("#,###");
+		
+		//비용단위가 커질수록 회전 수가 많아질수록 단위가 마이너스로 뜨면서 이상했는데, total 데이터 타입을 long으로 변환해주니 문제 없었음!
+		//내부에 있는 변수 데이터 타입 잘 보기.
+		
+		int[] win = LottoSimulator.createLotto(); //static 메소드는 객체 지정 필요없어 좋다.
+		int bonus = createBonus(win);
+		long total = 0;
+		long money;
+		
+		while(true) {
+			int[] myLotto = LottoSimulator.createLotto();
+			createPrize(win, myLotto, bonus);
+			total ++;
+			money = total * 1000;
+			System.out.printf("현재 %d 번째\n", total);
+			
+			if(prize1 == 1) {
+				System.out.println("1등에 당첨되셨습니다.");
+				System.out.printf("1등 당첨횟수: %d회\n", prize1);
+				System.out.printf("2등 당첨횟수: %d회\n", prize2);
+				System.out.printf("3등 당첨횟수: %d회\n", prize3);
+				System.out.printf("4등 당첨횟수: %d회\n", prize4);
+				System.out.printf("5등 당첨횟수: %d회\n", prize5);
+				System.out.printf("꽝 당첨횟수: %d회\n", prize0);
+				System.out.printf("총 횟수: %d회\n", total);
+				System.out.println("총 비용: " + money + "원");
+				break;
+			}
+			
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+	}
+
+}
